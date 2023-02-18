@@ -1,5 +1,6 @@
 const LndGrpc = require("lnd-grpc");
 const dotenv = require("dotenv");
+const Invoice = require("./db/models/invoice.js");
 
 dotenv.config();
 
@@ -51,13 +52,21 @@ const invoiceEventStream = async () => {
     add_index: 0,
     settle_index: 0,
   })
-    .on("data", (data) => {
-      console.log("onData", data);
-
+    .on("data", async (data) => {
       if (data.settled) {
-        console.log("Invoice settled");
-
-        //  Save tx to database
+        // update inv in database
+        await Invoice.update(data.payment_request, {
+          settled: data.settled,
+          settle_date: data.settle_date,
+        });
+      } else {
+        // create inv in database
+        await Invoice.create({
+          payment_request: data.payment_request,
+          value: data.value,
+          memo: data.memo,
+          settled: data.settled,
+        });
       }
     })
     .on("error", (err) => {
