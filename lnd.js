@@ -1,6 +1,7 @@
 const LndGrpc = require("lnd-grpc");
 const dotenv = require("dotenv");
 const Invoice = require("./db/models/invoice.js");
+const Payment = require("./db/models/payment.js");
 
 dotenv.config();
 
@@ -42,8 +43,6 @@ const payInvoice = async ({ payment_request }) => {
     payment_request: payment_request,
   });
 
-  console.log(paidInvoice);
-
   return paidInvoice;
 };
 
@@ -53,6 +52,7 @@ const invoiceEventStream = async () => {
     settle_index: 0,
   })
     .on("data", async (data) => {
+      console.log("onData", data);
       if (data.settled) {
         // update inv in database
         await Invoice.update(data.payment_request, {
@@ -66,6 +66,7 @@ const invoiceEventStream = async () => {
           value: data.value,
           memo: data.memo,
           settled: data.settled,
+          send: false,
         });
       }
     })

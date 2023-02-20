@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const Invoice = require("../db/models/invoice.js");
+
 const {
   getBalance,
   createInvoice,
@@ -38,21 +40,25 @@ router.post("/invoice", (req, res) => {
     });
 });
 
-router.post("/pay", (req, res) => {
+router.post("/pay", async (req, res) => {
   const { payment_request } = req.body;
 
-  payInvoice({ payment_request })
-    .then((paidInvoice) => {
-      if (paidInvoice.payment_error) {
-        res.status(500).json(paidInvoice.payment_error);
-      }
+  const pay = await payInvoice({ payment_request });
 
-      //   Save tx to database
-      res.status(200).json(paidInvoice);
-    })
-    .catch((err) => {
-      res.status(500).json(err);
-    });
+  if (pay.payment_error) {
+    res.status(500).json(pay.payment_error);
+  }
+
+  const payment = await Invoice.create({
+    payment_request: payment_request,
+    send: true,
+    value: pay.payment_route.total_amt,
+    fees: pay.payment_route.total_fees,
+    settled: true,
+    settle_date: Date.now(),
+  });
+
+  res.status(200).json(payment);
 });
 
 module.exports = router;

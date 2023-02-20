@@ -9,6 +9,10 @@ exports.up = function (knex) {
 
     table.string("memo");
 
+    table.integer("fees");
+
+    table.boolean("send").notNullable();
+
     table.boolean("settled").notNullable();
 
     table.timestamp("settle_date").defaultTo(0);

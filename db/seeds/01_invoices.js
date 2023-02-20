@@ -11,6 +11,16 @@ exports.seed = function (knex) {
           memo: "yo",
           value: 100,
           settled: false,
+          send: false,
+        },
+        {
+          payment_request:
+            "lnbcrt2u1p3l8ht4pp59aun8denxm647xns2vzxm3l64uwqh30gua70s82v9g5qu77p7e4qdqqcqzpgxqyz5vqsp52z3c5n26a83cg27uhhjdzddpl7lsqycxn06n4t3de3n2yjk5mm3q9qyyssqus20cz57lhajpuzja4hl3xwkq8hv4uetcyueh5kvhvs62r8r4as86ms4xu33qq9r7yuan9uvnjd6dfjel4jkumfuknmg5wxyqpkal6qqqs0ajh",
+          value: 100,
+          fees: 10,
+          send: true,
+          settled: true,
+          settle_date: Date.now(),
         },
       ]);
     });
