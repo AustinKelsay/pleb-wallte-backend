@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const { connect, grpc } = require("./lnd.js");
-const lightningRouter = require("./lightning/lightningRouter.js");
+const lightningRouter = require("./routers/lightningRouter.js");
+const userRouter = require("./routers/userRouter.js");
 
 const server = express();
 
@@ -16,5 +17,6 @@ server.get("/", (req, res) => {
 });
 
 server.use("/lightning", lightningRouter);
+server.use("/user", userRouter);
 
 module.exports = server;

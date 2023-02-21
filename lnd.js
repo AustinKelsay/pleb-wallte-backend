@@ -1,7 +1,6 @@
 const LndGrpc = require("lnd-grpc");
 const dotenv = require("dotenv");
 const Invoice = require("./db/models/invoice.js");
-const Payment = require("./db/models/payment.js");
 
 dotenv.config();
 
