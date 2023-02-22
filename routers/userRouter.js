@@ -14,7 +14,7 @@ router.get("/", authenticateAdmin, (req, res) => {
     });
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", authenticateAdmin, (req, res) => {
   User.findById(req.params.id)
     .then((user) => {
       res.status(200).json(user);
@@ -58,7 +58,7 @@ router.post("/login", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", authenticateAdmin, (req, res) => {
   User.update(req.params.id, req.body)
     .then((user) => {
       res.status(200).json(user);
@@ -68,7 +68,7 @@ router.put("/:id", (req, res) => {
     });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", authenticateAdmin, (req, res) => {
   User.delete(req.params.id)
     .then((user) => {
       res.status(200).json(user);

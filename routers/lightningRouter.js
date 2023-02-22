@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const Invoice = require("../db/models/invoice.js");
+const authenticate = require("../routers/middleware/authenticate.js");
+const authenticateAdmin = require("../routers/middleware/authenticateAdmin.js");
 
 const {
   getBalance,
@@ -28,7 +30,7 @@ router.get("/channelbalance", (req, res) => {
     });
 });
 
-router.post("/invoice", (req, res) => {
+router.post("/invoice", authenticate, (req, res) => {
   const { value, memo } = req.body;
 
   createInvoice({ value, memo })
@@ -40,7 +42,7 @@ router.post("/invoice", (req, res) => {
     });
 });
 
-router.post("/pay", async (req, res) => {
+router.post("/pay", authenticateAdmin, async (req, res) => {
   const { payment_request } = req.body;
 
   const pay = await payInvoice({ payment_request });
