@@ -5,7 +5,7 @@ module.exports = {
   findAll: () => {
     return db("users");
   },
-  findByUsername: ({ username }) => {
+  findByUsername: (username) => {
     return db("users").where({ username }).first();
   },
   create: (user) => {

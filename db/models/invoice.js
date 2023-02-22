@@ -2,6 +2,9 @@
 const db = require("../dbConfig");
 
 module.exports = {
+  findAll: () => {
+    return db("invoices");
+  },
   findById: (id) => {
     return db("invoices").where({ id }).first();
   },

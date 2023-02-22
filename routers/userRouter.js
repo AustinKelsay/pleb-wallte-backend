@@ -3,6 +3,7 @@ const User = require("../db/models/user.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authenticateAdmin = require("./middleware/authenticateAdmin.js");
+const authenticate = require("./middleware/authenticate.js");
 
 router.get("/", authenticateAdmin, (req, res) => {
   User.findAll()
@@ -14,14 +15,24 @@ router.get("/", authenticateAdmin, (req, res) => {
     });
 });
 
-router.get("/:id", authenticateAdmin, (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => {
-      res.status(200).json(user);
-    })
-    .catch((err) => {
-      res.status(500).json(err);
-    });
+router.get("/me", authenticate, async (req, res) => {
+  const token = req.headers.authorization;
+  const secret = process.env.JWT_SECRET;
+
+  jwt.verify(token, secret, (err, decodedToken) => {
+    if (err) {
+      res.status(401).json({ message: "Error decoding token", Error: err });
+    }
+
+    User.findByUsername(decodedToken.username)
+      .then((user) => {
+        console.log(user);
+        res.status(200).json(user);
+      })
+      .catch((err) => {
+        res.status(500).json(err);
+      });
+  });
 });
 
 router.post("/register", (req, res) => {

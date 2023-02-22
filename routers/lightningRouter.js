@@ -30,6 +30,16 @@ router.get("/channelbalance", (req, res) => {
     });
 });
 
+router.get("/invoices", (req, res) => {
+  Invoice.findAll()
+    .then((invoices) => {
+      res.status(200).json(invoices);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
+
 router.post("/invoice", authenticate, (req, res) => {
   const { value, memo } = req.body;
 
@@ -51,16 +61,18 @@ router.post("/pay", authenticateAdmin, async (req, res) => {
     res.status(500).json(pay.payment_error);
   }
 
-  const payment = await Invoice.create({
-    payment_request: payment_request,
-    send: true,
-    value: pay.payment_route.total_amt,
-    fees: pay.payment_route.total_fees,
-    settled: true,
-    settle_date: Date.now(),
-  });
+  if (pay?.payment_route) {
+    const payment = await Invoice.create({
+      payment_request: payment_request,
+      send: true,
+      value: pay.payment_route.total_amt,
+      fees: pay.payment_route.total_fees,
+      settled: true,
+      settle_date: Date.now(),
+    });
 
-  res.status(200).json(payment);
+    res.status(200).json(payment);
+  }
 });
 
 module.exports = router;
