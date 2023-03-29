@@ -28,10 +28,19 @@ const getChannelBalance = async () => {
   return channelBalance;
 };
 
-const createInvoice = async ({ value, memo }) => {
+const createInvoice = async ({ value, memo, user_id }) => {
   const invoice = await grpc.services.Lightning.addInvoice({
     value: value,
     memo: memo,
+  });
+
+  await Invoice.create({
+    payment_request: invoice.payment_request,
+    value: value,
+    memo: memo,
+    settled: false,
+    send: false,
+    user_id: user_id,
   });
 
   return invoice;
@@ -51,22 +60,21 @@ const invoiceEventStream = async () => {
     settle_index: 0,
   })
     .on("data", async (data) => {
-      console.log("onData", data);
       if (data.settled) {
-        // update inv in database
-        await Invoice.update(data.payment_request, {
-          settled: data.settled,
-          settle_date: data.settle_date,
-        });
+        // Check if the invoice exists in the database
+        const existingInvoice = await Invoice.findOne(data.payment_request);
+
+        // If the invoice exists, update it in the database
+        if (existingInvoice) {
+          await Invoice.update(data.payment_request, {
+            settled: data.settled,
+            settle_date: data.settle_date,
+          });
+        } else {
+          console.log("Invoice not found in the database");
+        }
       } else {
-        // create inv in database
-        await Invoice.create({
-          payment_request: data.payment_request,
-          value: data.value,
-          memo: data.memo,
-          settled: data.settled,
-          send: false,
-        });
+        console.log("dataaa", data);
       }
     })
     .on("error", (err) => {

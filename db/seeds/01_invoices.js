@@ -12,6 +12,7 @@ exports.seed = function (knex) {
           value: 100,
           settled: false,
           send: false,
+          user_id: 1,
         },
         {
           payment_request:
@@ -21,6 +22,7 @@ exports.seed = function (knex) {
           send: true,
           settled: true,
           settle_date: Date.now(),
+          user_id: 2,
         },
       ]);
     });

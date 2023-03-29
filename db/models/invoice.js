@@ -5,8 +5,8 @@ module.exports = {
   findAll: () => {
     return db("invoices");
   },
-  findById: (id) => {
-    return db("invoices").where({ id }).first();
+  findOne: (payment_request) => {
+    return db("invoices").where({ payment_request }).first();
   },
   create: (invoice) => {
     return db("invoices").insert(invoice).returning("*");

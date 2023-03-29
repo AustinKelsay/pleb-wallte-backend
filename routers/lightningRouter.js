@@ -41,9 +41,9 @@ router.get("/invoices", (req, res) => {
 });
 
 router.post("/invoice", authenticate, (req, res) => {
-  const { value, memo } = req.body;
+  const { value, memo, user_id } = req.body;
 
-  createInvoice({ value, memo })
+  createInvoice({ value, memo, user_id })
     .then((invoice) => {
       res.status(200).json(invoice);
     })
